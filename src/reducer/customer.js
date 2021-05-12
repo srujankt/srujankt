@@ -9,14 +9,14 @@ const intialState = {
       name: "",
     },
   ],
+  finalCustData: [],
   customer: [
     { id: 1, name: "Srujan" },
-    { id: 2, name: "Sai Kishor" },
+    { id: 2, name: "Sai Kishore" },
   ],
 };
 
 const customers = (state = intialState, action) => {
-  debugger;
   switch (action.type) {
     case "Add":
       let item = 0;
@@ -43,6 +43,36 @@ const customers = (state = intialState, action) => {
           custData: data,
         };
       }
+      const ids = [];
+      state.custData.map((item, index) => {
+        if (ids.filter((x) => x === item.id).length == 0) {
+          ids.push(item.id);
+        }
+      });
+      const custList = [];
+      ids.map((item) => {
+        let dollars = 0;
+        let point = 0;
+        let names = "";
+        state.custData
+          .filter((x) => x.id === item)
+          .map((inneritem) => {
+            names = inneritem.name;
+            dollars = dollars + inneritem.dollar;
+            point = point + inneritem.points;
+          });
+        custList.push({ name: names, dollar: dollars, points: point });
+      });
+      state = {
+        ...state,
+        finalCustData: custList,
+      };
+      break;
+    case "FinalUpdate":
+      state = {
+        ...state,
+        finalCustData: action.payload,
+      };
       break;
     default:
       break;
