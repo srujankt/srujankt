@@ -7,6 +7,12 @@ const intialState = {
       points: 0,
       id: 0,
       name: "",
+      date: "",
+      day: "",
+      month: "",
+      year: "",
+      monthinword: "",
+      diffOfDate: "",
     },
   ],
   finalCustData: [],
@@ -36,6 +42,12 @@ const customers = (state = intialState, action) => {
             name: action.payload.name,
             dollar: action.payload.dollar,
             points: action.payload.points,
+            date: action.payload,
+            day: action.payload.day,
+            month: action.payload.month,
+            year: action.payload.year,
+            monthinword: action.payload.monthinword,
+            diffOfDate: action.payload.diffOfDate,
           },
         ];
         state = {
@@ -49,19 +61,40 @@ const customers = (state = intialState, action) => {
           ids.push(item.id);
         }
       });
+      const months = [];
+      state.custData.map((item, index) => {
+        if (months.filter((x) => x === item.month).length == 0) {
+          months.push(item.month);
+        }
+      });
       const custList = [];
       ids.map((item) => {
         let dollars = 0;
         let point = 0;
         let names = "";
-        state.custData
-          .filter((x) => x.id === item)
-          .map((inneritem) => {
-            names = inneritem.name;
-            dollars = dollars + inneritem.dollar;
-            point = point + inneritem.points;
-          });
-        custList.push({ name: names, dollar: dollars, points: point });
+        let sMonth = "";
+        months.map((monthitem) => {
+          dollars = 0;
+          point = 0;
+          state.custData
+            .filter(
+              (x) => x.id === item && x.month === monthitem && x.diffOfDate < 90
+            )
+            .map((inneritem) => {
+              names = inneritem.name;
+              dollars = dollars + inneritem.dollar;
+              point = point + inneritem.points;
+              sMonth = inneritem.monthinword;
+            });
+          if (names) {
+            custList.push({
+              name: names,
+              dollar: dollars,
+              points: point,
+              wordInMonths: sMonth,
+            });
+          }
+        });
       });
       state = {
         ...state,
